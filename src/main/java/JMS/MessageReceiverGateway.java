@@ -13,14 +13,18 @@ public class MessageReceiverGateway {
 	private Destination destination;
 	private MessageConsumer consumer;
 
-	public MessageReceiverGateway(String queue) {
+	public MessageReceiverGateway(String destName, boolean isTopic) {
 		ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://localhost:61616");
 		try {
 			connection = connectionFactory.createConnection();
 			connection.start();
 
 			session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-			destination = session.createQueue(queue);
+			if (isTopic) {
+				destination = session.createTopic(destName);
+			} else {
+				destination = session.createQueue(destName);
+			}
 
 			consumer = this.session.createConsumer(destination);
 		}

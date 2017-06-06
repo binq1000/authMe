@@ -14,14 +14,18 @@ public class MessageSenderGateway {
 	private MessageProducer producer;
 
 
-	public MessageSenderGateway(String queue) {
+	public MessageSenderGateway(String destName, boolean isTopic) {
 		try {
 			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://localhost:61616");
 			connection = connectionFactory.createConnection();
 			connection.start();
 
 			session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-			destination = session.createQueue(queue);
+			if (isTopic) {
+				destination = session.createTopic(destName);
+			} else {
+				destination = session.createQueue(destName);
+			}
 			producer = session.createProducer(destination);
 			producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
 		}
@@ -33,7 +37,6 @@ public class MessageSenderGateway {
 
 	public Message createMessage(String message){
 		try {
-			System.out.println("@MessageSenderGateway Creating message: " + message);
 			return session.createTextMessage(message);
 		} catch (JMSException e) {
 			e.printStackTrace();
@@ -43,7 +46,6 @@ public class MessageSenderGateway {
 
 	public void send(Message msg) {
 		try {
-			System.out.println("@MessageSenderGateway Sending message");
 			producer.send(msg);
 		} catch (JMSException e) {
 			e.printStackTrace();
