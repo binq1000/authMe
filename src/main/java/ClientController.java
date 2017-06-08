@@ -12,7 +12,7 @@ import static javafx.application.ConditionalFeature.FXML;
 /**
  * Created by Nekkyou on 17-5-2017.
  */
-public class UIController {
+public class ClientController {
 	@javafx.fxml.FXML
 	private TextField tfInput;
 

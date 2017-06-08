@@ -66,6 +66,11 @@ public class ClientAppGateway {
 
 	public void sendMessage(String text) {
 		Message msg = sender.createMessage(text);
+		try {
+			msg.setBooleanProperty("isResponse", false);
+		} catch (JMSException e) {
+			e.printStackTrace();
+		}
 		sender.send(msg);
 	}
 

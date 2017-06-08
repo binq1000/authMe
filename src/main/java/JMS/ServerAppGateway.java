@@ -39,11 +39,11 @@ public class ServerAppGateway {
 				System.out.println("@ServerAppGateway Received text message: " + ((TextMessage) msg).getText());
 				final String item = ((TextMessage) msg).getText();
 
+				boolean isReponse = msg.getBooleanProperty("isResponse");
 				//Check if new item, or a response.
-				if (item.startsWith("response;")) {
-					String response = item.substring(item.indexOf(";") + 1);
-					final String appName = response.substring(0, response.indexOf(";"));
-					String answer = response.substring(response.indexOf(";") + 1);
+				if (isReponse) {
+					final String appName = item.substring(0, item.indexOf(";"));
+					String answer = item.substring(item.indexOf(";") + 1);
 
 					Platform.runLater(new Runnable() {
 						public void run() {
@@ -63,11 +63,31 @@ public class ServerAppGateway {
 		}
 	}
 
-	public void sendResponse(String text) {
-		Message msg = sender.createMessage(text);
+	public void sendYesResponse(String text, String time) {
+		String response = text + ";yes;" + time;
+		Message msg = sender.createMessage(response);
 		sender.send(msg);
 
-		Message cancelmsg = serverSender.createMessage("response;" + text);
+		Message cancelmsg = serverSender.createMessage(response);
+		setMessageProperties(cancelmsg, true);
 		serverSender.send(cancelmsg);
+	}
+
+	public void sendNoResponse(String text) {
+		String response = text + ";no";
+		Message msg = sender.createMessage(response);
+		sender.send(msg);
+
+		Message cancelmsg = serverSender.createMessage(response);
+		setMessageProperties(cancelmsg, true);
+		serverSender.send(cancelmsg);
+	}
+
+	private void setMessageProperties(Message msg, boolean isResponse) {
+		try {
+			msg.setBooleanProperty("isResponse", isResponse);
+		} catch (JMSException e) {
+			e.printStackTrace();
+		}
 	}
 }

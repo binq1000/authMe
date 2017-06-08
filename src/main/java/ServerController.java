@@ -43,7 +43,7 @@ public class ServerController implements Initializable{
 				}
 			}
 
-			serverAppGateway.sendResponse(item + ";yes;" + time);
+			serverAppGateway.sendYesResponse(item, time);
 		}
 	}
 
@@ -53,7 +53,7 @@ public class ServerController implements Initializable{
 			String item = selectedItem.toString();
 			ListDataSingleton.getInstance().removeItem(item);
 
-			serverAppGateway.sendResponse(item + ";no");
+			serverAppGateway.sendNoResponse(item);
 		}
 
 	}
